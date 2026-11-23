@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — peer-calibrated pre-token board</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">◉</span>
+    <div>
+      <h1>TOKEN RADAR</h1>
+      <p class="sub">Pre-token protocols, ranked by implied value — model <strong>radar-2</strong>, calibrated on the snapshot itself</p>
+    </div>
+  </div>
+  <dl class="meta" id="meta"></dl>
+</header>
+
+<section class="stats" id="stats" aria-label="Board summary"></section>
+
+<section class="toolbar" aria-label="Filters">
+  <label class="field grow">Search
+    <input id="q" type="search" placeholder="Protocol name or slug…" autocomplete="off">
+  </label>
+  <label class="field">Category
+    <select id="cat"><option value="">All categories</option></select>
+  </label>
+  <label class="field">Chain
+    <select id="chain"><option value="">All chains</option></select>
+  </label>
+  <label class="check"><input id="watch" type="checkbox"> Watchlist only</label>
+  <button id="reset" type="button">Reset</button>
+</section>
+
+<section class="detail" id="detail" hidden aria-label="Protocol detail"></section>
+
+<main>
+  <table id="board">
+    <caption id="caption">Ranked board</caption>
+    <thead>
+      <tr>
+        <th data-sort="rank" aria-sort="ascending">#</th>
+        <th data-sort="name">Protocol</th>
+        <th data-sort="implied_value_usd" class="num">Implied value</th>
+        <th data-sort="tvl_usd" class="num">TVL</th>
+        <th data-sort="change_7d" class="num">7d</th>
+        <th data-sort="age_days" class="num">Age</th>
+        <th data-sort="peer_multiple" class="num">Peer ×</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p class="count" id="count"></p>
+</main>
+
+<section class="method" aria-label="How the model works">
+  <h2>How the value is worked out</h2>
+  <p class="formula">implied = TVL × peer&nbsp;multiple × growth × maturity × breadth</p>
+  <ul class="factors">
+    <li><strong>Peer multiple</strong> — the median market-cap&nbsp;/&nbsp;TVL of the tokenised protocols in the same category (at least 3 peers, else the global median). Market cap here is circulating, not fully diluted, so the multiple is a floor, never a forecast.</li>
+    <li><strong>Growth</strong> — the protocol's 7-day TVL change, clamped to −50…+150%, at 0.6% of value per point.</li>
+    <li><strong>Maturity</strong> — saturating with age: 0.70 + 0.30 × age&nbsp;/&nbsp;(age&nbsp;+&nbsp;365). A year running with no token gets most of the way there.</li>
+    <li><strong>Breadth</strong> — +2% per extra chain, up to 8 extra chains.</li>
+  </ul>
+  <p>No protocol name is ever special-cased. The watchlist is the floor, never the ceiling: every rankable pre-token protocol in the snapshot is ranked, watchlist or not.</p>
+  <h3>Peer calibration by category</h3>
+  <table class="peers">
+    <thead><tr><th>Category</th><th class="num">Tokenised peers</th><th class="num">Median mcap / TVL</th><th>Source</th></tr></thead>
+    <tbody id="peers"></tbody>
+  </table>
+</section>
+
+<section class="live" aria-label="Live tokens">
+  <h2>Already trading — shown for calibration, not ranked</h2>
+  <p>These protocols record a token, so the market already prices them. They are not on the board; their market caps are what the peer multiples above are built from.</p>
+  <ol class="live-list" id="live"></ol>
+</section>
+
+<footer>
+  <p>Snapshot: DefiLlama protocols, fetched <span id="asof"></span>. Values are the entry's own claim from that snapshot, not a prediction that a token will launch. This page makes no network request.</p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
